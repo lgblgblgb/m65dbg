@@ -1,4 +1,3 @@
-#define _BSD_SOURCE _BSD_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>

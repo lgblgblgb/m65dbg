@@ -1,15 +1,6 @@
 // serial code routine borrowed from:
 // http://stackoverflow.com/questions/6947413/how-to-open-read-and-write-from-serial-port-in-c
 
-
-// Note1: enable unix domain socket support is untested on Windows/Cygwin so
-// it's better to leave commented out by default ...
-// -------------------------------------------------
-// Note2 (GI): I'm leaving this always enabled now, as I've gotten 
-// unix-sockets to work in winxp+cygwin
-#define SUPPORT_UNIX_DOMAIN_SOCKET
-
-#define _BSD_SOURCE _BSD_SOURCE
 #include <errno.h>
 #include <fcntl.h> 
 #include <string.h>

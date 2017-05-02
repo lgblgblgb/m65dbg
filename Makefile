@@ -10,7 +10,7 @@ else
 endif
 
 CC		= gcc
-CFLAGS		= -c -Wall -g -std=c99
+CFLAGS		= -Wall -O2 -g -std=c99 -include m65dbg.h
 SOURCES		= main.c serial.c commands.c gs4510.c
 OBJECTS		= $(SOURCES:.c=.o)
 EXECUTABLE	= m65dbg
@@ -21,7 +21,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
 .c.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
