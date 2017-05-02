@@ -148,7 +148,7 @@ void serialFlush(void)
   ioctl(fd, TIOCINQ, &bytes_available);
 #endif
   if (bytes_available > 0)
-    read(fd, tmp, bytes_available);
+    bytes_available = read(fd, tmp, bytes_available);  // just to avoid warning on read's retval
 }
 
 /**
@@ -165,8 +165,13 @@ void serialWrite(char* string)
     strcat(string, "\n");
     i++;
   }
-
-  write (fd, string, i);           // send string
+  while (i) {
+    int ret = write (fd, string, i);           // send string
+    if (ret <= 0)
+      break;  // give up, though proper error handling would be great
+    i -= ret;
+    string += ret;
+  }
 }
 
 

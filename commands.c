@@ -320,7 +320,7 @@ bool delete_from_watchlist(int wnum)
 // loads the *.map file corresponding to the provided *.list file (if one exists)
 void load_map(char* fname)
 {
-  char strMapFile[200];
+	char strMapFile[200];
 	strcpy(strMapFile, fname);
 	char* sdot = strrchr(strMapFile, '.');
 	*sdot = '\0';
@@ -333,13 +333,12 @@ void load_map(char* fname)
 
 		// load the map file
 		FILE* f = fopen(strMapFile, "rt");
-
 		while (!feof(f))
 		{
 			char line[1024];
 			char sval[256];
-			fgets(line, 1024, f);
-
+			if (!fgets(line, sizeof line, f))
+				break;	// this would be I/O error, as feof() already handled the EOF question ...
 			int addr;
 			char sym[1024];
 			sscanf(line, "$%04X %s", &addr, sym);
@@ -352,31 +351,28 @@ void load_map(char* fname)
 			sme.symbol = sym;
 			add_to_symmap(sme);
 		}
+		fclose(f);
 	}
 }
 
 // loads the given *.list file
 void load_list(char* fname)
 {
-  FILE* f = fopen(fname, "rt");
+	FILE* f = fopen(fname, "rt");
 	char line[1024];
-
-  while (!feof(f))
-	{
-	  fgets(line, 1024, f);
-
-		if (strlen(line) == 0)
-		  continue;
+	while (!feof(f)) {
+		if (!fgets(line, sizeof line, f))
+			break;	// this would be I/O error, as feof() already handled the EOF question ...
+		if (!*line)
+			continue;
 
 		char *s = strrchr(line, '|');
-		if (s != NULL && *s != '\0')
-		{
+		if (s != NULL && *s != '\0') {
 			s++;
 			if (strlen(s) < 5)
-			  continue;
-
+				continue;
 			int addr;
-      char file[1024];
+			char file[1024];
 			int lineno;
 			strcpy(file, &strtok(s, ":")[1]);
 			sscanf(strtok(NULL, ":"), "%d", &lineno);
@@ -390,7 +386,7 @@ void load_list(char* fname)
 			add_to_list(fl);
 		}
 	}
-
+	fclose(f);
 	load_map(fname);
 }
 
@@ -408,15 +404,15 @@ void load_list(char* fname)
 
 void show_location(type_fileloc* fl)
 {
-  FILE* f = fopen(fl->file, "rt");
-  if (f == NULL)
-    return;
+	FILE* f = fopen(fl->file, "rt");
+	if (!f)
+		return;
 	char line[1024];
 	int cnt = 1;
-
 	while (!feof(f))
 	{
-		fgets(line, 1024, f);
+		if (!fgets(line, sizeof line, f))
+			break;	// this would be I/O error, as feof() already handled the EOF question ...
 		if (cnt >= (fl->lineno - 10) && cnt <= (fl->lineno + 10) )
 		{
 		  if (cnt == fl->lineno)
@@ -1371,22 +1367,20 @@ void cmdLoad(void)
 		int fsize = ftell(fload);	
 		rewind(fload);      		
 		char* buffer = (char *)malloc(fsize*sizeof(char));
-		if(buffer) 
-		{
-			fread(buffer, fsize, 1, fload);
-		
-			int i = 0;
-			while(i < fsize)
-			{
-				int outSize = fsize - i;
-				if(outSize > 16) {
-					outSize = 16;
+		if (buffer)  {
+			if (fread(buffer, fsize, 1, fload) == 1) {
+				int i = 0;
+				while(i < fsize) {
+					int outSize = fsize - i;
+					if(outSize > 16) {
+						outSize = 16;
+					}
+					put_mem28array(addr + i, (unsigned char*) (buffer + i), outSize);
+					i += outSize;
 				}
-
-				put_mem28array(addr + i, (unsigned char*) (buffer + i), outSize);
-				i += outSize;
-			}	
-
+			} else {
+				printf("Error reading the file '%s'!\n", strBinFile);
+			}
 			free(buffer);
 		}
   		fclose(fload);
