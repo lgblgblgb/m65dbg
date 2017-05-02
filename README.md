@@ -1,5 +1,5 @@
 # m65dbg
-An enhanced remote serial debugger/monitor for the mega65 project
+An enhanced remote serial debugger/monitor for the mega65 project, with also Xemu support.
 
 I'll try to document my various goals/ambitions/ideas here.
 

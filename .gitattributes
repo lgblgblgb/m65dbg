@@ -1,0 +1,9 @@
+*.c linguist-language=C
+*.h linguist-language=C
+*.s linguist-language=Assembly
+*.S linguist-language=Assembly
+Makefile.* linguist-language=Makefile
+Makefile linguist-language=Makefile
+*.make linguist-language=Makefile
+*.mak linguist-language=Makefile
+*.py linguist-language=Python
